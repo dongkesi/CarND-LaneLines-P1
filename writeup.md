@@ -9,18 +9,30 @@ The goals / steps of this project are the following:
 
 The following pictures is a comparative result on a same complex image in different color space. The left is HLS color space, right is RGB color space. 
 
+
 * Original Image
-![pic][HLS_1_1]{:height="40%" width="40%"} ![pic][RGB_1_1]{:height="40%" width="40%"}
+
+<img src="processed_pictures/HLS_4/origin.jpg" height="40%" width="40%" alt="Combined Image" />    <img src="processed_pictures/RGB_4/origin.jpg" height="40%" width="40%" alt="Combined Image" />
+
 * HLS VS RGB
-![pic][HLS_1_2]{:height="40%" width="40%"} ![pic][RGB_1_2]{:height="40%" width="40%"}
+
+<img src="processed_pictures/HLS_4/img_cov.jpg" height="40%" width="40%" alt="Combined Image" />    <img src="processed_pictures/RGB_4/img_cov.jpg" height="40%" width="40%" alt="Combined Image" />
+
 * Detect white and yellow color
-![pic][HLS_1_3]{:height="40%" width="40%"} ![pic][RGB_1_3]{:height="40%" width="40%"}
+
+<img src="processed_pictures/HLS_4/wy_img.jpg" height="40%" width="40%" alt="Combined Image" />    <img src="processed_pictures/RGB_4/wy_img.jpg" height="40%" width="40%" alt="Combined Image" />
+
 * Gaussian Smoothing
-![pic][HLS_1_4]{:height="40%" width="40%"} ![pic][RGB_1_4]{:height="40%" width="40%"}
+
+<img src="processed_pictures/HLS_4/blur_gray.jpg" height="40%" width="40%" alt="Combined Image" />    <img src="processed_pictures/RGB_4/blur_gray.jpg" height="40%" width="40%" alt="Combined Image" />
+
 * Canny Edge Detection
-![pic][HLS_1_5]{:height="40%" width="40%"} ![pic][RGB_1_5]{:height="40%" width="40%"}
+
+<img src="processed_pictures/HLS_4/edges.jpg" height="40%" width="40%" alt="Combined Image" />    <img src="processed_pictures/RGB_4/edges.jpg" height="40%" width="40%" alt="Combined Image" />
+
 * Hough, ROI, and Merge
-![pic][HLS_1_6]{:height="40%" width="40%"} ![pic][RGB_1_6]{:height="40%" width="40%"}
+
+<img src="processed_pictures/HLS_4/result.jpg" height="40%" width="40%" alt="Combined Image" />    <img src="processed_pictures/RGB_4/result.jpg" height="40%" width="40%" alt="Combined Image" />
 
 ## Reflection
 
@@ -55,7 +67,7 @@ This step is to make lanes pixels color highlight in full image.
 First, I use grayscale, it works well in the first two videos. But it gets messy on the challenge video, because there is many shadows on the left yellow lane. Then, I try some other color space, HLS looks fine even if in the worst situation.
 
 ```python
-	img_cov = cv2.cvtColor(img, cv2.COLOR_RGB2HLS_FULL)
+img_cov = cv2.cvtColor(img, cv2.COLOR_RGB2HLS_FULL)
 ```
 
 #### 1.2. Pick White and Yellow Color
@@ -63,19 +75,19 @@ First, I use grayscale, it works well in the first two videos. But it gets messy
 The Lanes are white and yellow. But there are not white and yellow in the convert color space yet, need to select a different RGB range values. How to select color range values? I use matplotlib.pylot lib show the coverted image and use mouse over the white and yellow lane get a approximate range.
 
 ```python
-    y_upper = np.array([40, 255, 255])
-    y_lower = np.array([0, 100, 100])
-    w_upper = np.array([255, 255, 255])
-    w_lower = np.array([0, 200, 0])
+y_upper = np.array([40, 255, 255])
+y_lower = np.array([0, 100, 100])
+w_upper = np.array([255, 255, 255])
+w_lower = np.array([0, 200, 0])
 ```
 
 After that, merge yellow and white image with original one.
 
 ```python
-    y_img_mask = cv2.inRange(img_cov, y_lower, y_upper)
-    w_img_mask = cv2.inRange(img_cov, w_lower, w_upper)
-    wy_img_mask = cv2.bitwise_or(y_img_mask, w_img_mask)
-    wy_img = cv2.bitwise_and(img, img, mask=wy_img_mask)
+y_img_mask = cv2.inRange(img_cov, y_lower, y_upper)
+w_img_mask = cv2.inRange(img_cov, w_lower, w_upper)
+wy_img_mask = cv2.bitwise_or(y_img_mask, w_img_mask)
+wy_img = cv2.bitwise_and(img, img, mask=wy_img_mask)
 ```
 
 #### 1.3. Grayscale
@@ -87,7 +99,7 @@ Why convert from RGB to Grayscale?[[Ref](https://www.quora.com/In-image-processi
 > - **Intensity data is usually sufficient**: For simple tasks (e.g. edge detection), intensity plays a major role. Grayscale (i.e. intensity) is usually sufficient to distinguish such edges.
 
 ```python
-	gray = grayscale(wy_img)
+gray = grayscale(wy_img)
 ```
 
 ### 2. Edges Detection
@@ -97,8 +109,8 @@ Why convert from RGB to Grayscale?[[Ref](https://www.quora.com/In-image-processi
 > Gaussian smoothing, which is essentially a way of suppressing noise and spurious gradients by averaging. cv2.Canny() actually applies Gaussian smoothing internally, but we include it here because you can get a different result by applying further smoothing. [Ref Online Course]
 
 ```python
-    kernel_size = 11
-    blur_gray = gaussian_blur(gray, kernel_size)
+kernel_size = 11
+blur_gray = gaussian_blur(gray, kernel_size)
 ```
 
 #### 2.2. Canny Edge Detection
@@ -106,9 +118,9 @@ Why convert from RGB to Grayscale?[[Ref](https://www.quora.com/In-image-processi
 > **Threshold values**, minVal and maxVal. Any edges with intensity gradient more than maxVal are sure to be edges and those below minVal are sure to be non-edges, so discarded. Those who lie between these two thresholds are classified edges or non-edges based on their connectivity. If they are connected to "sure-edge" pixels, they are considered to be part of edges. Otherwise, they are also discarded. [[Canny Theory](http://docs.opencv.org/trunk/da/d22/tutorial_py_canny.html)]
 
 ```python
-	low_threshold = 50
-    high_threshold = 3 * low_threshold
-    edges = canny(blur_gray, low_threshold, high_threshold)
+low_threshold = 50
+high_threshold = 3 * low_threshold
+edges = canny(blur_gray, low_threshold, high_threshold)
 ```
 
 ### 3. Region of Interest (ROI)
@@ -120,18 +132,18 @@ Why convert from RGB to Grayscale?[[Ref](https://www.quora.com/In-image-processi
 I used a fixed number define them at first, but the videos have different resolution, [960x540], [1280x720], so I add a scale fator on the width and height of image.
 
 ```python
-    height, width, _ = image.shape
-    v_bottom_left = [int(width * 0.16), int(height * 0.95)]
-    v_bottom_right = [int(width * 0.94), int(height * 0.95)]
-    v_top_left = [int(width * 0.47), int(height * 0.59)]
-    v_top_right = [int(width * 0.52), int(height * 0.59)]
+height, width, _ = image.shape
+v_bottom_left = [int(width * 0.16), int(height * 0.95)]
+v_bottom_right = [int(width * 0.94), int(height * 0.95)]
+v_top_left = [int(width * 0.47), int(height * 0.59)]
+v_top_right = [int(width * 0.52), int(height * 0.59)]
 ```
 
 #### 3.2. Draw ROI
 
 ```python
-    vertices = np.array([[v_bottom_left, v_top_left, v_top_right, v_bottom_right]], dtype=np.int32)
-    masked_edges = region_of_interest(edges, vertices)
+vertices = np.array([[v_bottom_left, v_top_left, v_top_right, v_bottom_right]], dtype=np.int32)
+masked_edges = region_of_interest(edges, vertices)
 ```
 
 ### 4. Hough Transform
@@ -143,19 +155,19 @@ Use it to find lines here.
 #### 4.1. Hough Parameters [[Ref](http://docs.opencv.org/2.4/modules/imgproc/doc/feature_detection.html?highlight=houghlinesp#houghlinesp)]
 
 ```python 
-	rho = 2 # Distance resolution of the accumulator in pixels.
-	theta = np.pi/180 # Angle resolution of the accumulator in radians.
-	threshold = 15 # Accumulator threshold parameter. Only those lines are returned that get enough votes.
-	min_line_len = 20 # Minimum line length. Line segments shorter than that are rejected. 
-	max_line_gap = 300 # Maximum allowed gap between points on the same line to link them.
+rho = 2 # Distance resolution of the accumulator in pixels.
+theta = np.pi/180 # Angle resolution of the accumulator in radians.
+threshold = 15 # Accumulator threshold parameter. Only those lines are returned that get enough votes.
+min_line_len = 20 # Minimum line length. Line segments shorter than that are rejected. 
+max_line_gap = 300 # Maximum allowed gap between points on the same line to link them.
 ```
 
 #### 4.2. Hough Transform
 
 ```python
-	# masked_edges must be a 8-bit, single-channel binary source image
-	lines = cv2.HoughLinesP(masked_edges, rho, theta, threshold, np.array([]),\
-	          minLineLength=min_line_len, maxLineGap=max_line_gap)
+# masked_edges must be a 8-bit, single-channel binary source image
+lines = cv2.HoughLinesP(masked_edges, rho, theta, threshold, np.array([]),\
+          minLineLength=min_line_len, maxLineGap=max_line_gap)
 ```
 
 #### 4.2. Draw Line
@@ -220,10 +232,9 @@ def draw_lines(img, lines, color=[255, 0, 0], thickness=12):
 - Then, I filter the horizontal lines by a slope range. It still bad.
 
 ```python
-	slope_min = np.tan(np.pi*30/180)
-	...
-    if (abs(slope) < slope_min):
-        continue
+slope_min = np.tan(np.pi*30/180)
+if (abs(slope) < slope_min):
+    continue
 ```
 
 - Third, I try to average slope and intercept every line according to their length. About lenght, use Y axis length as weight since there are white transverse lines noise in some frame. Now, it's better and it successfully filters the interfering lines. But the red lines always jetter.
@@ -231,27 +242,27 @@ def draw_lines(img, lines, color=[255, 0, 0], thickness=12):
 - Fouth, I add a slide window filter which has 10 size. The result is better than before.
 
 ```python
-	left_d = deque(maxlen=10)
-	right_d = deque(maxlen=10)
-	line_loss_cnt = 0
+left_d = deque(maxlen=10)
+right_d = deque(maxlen=10)
+line_loss_cnt = 0
 
-	def clean_deque():
-	    left_d.clear()
-	    right_d.clear()
-	    line_loss_cnt = 0
+def clean_deque():
+    left_d.clear()
+    right_d.clear()
+    line_loss_cnt = 0
 
-	def slide_filter(d, line):
-	    global line_loss_cnt
-	    if line is not None:
-	        d.append(line)
-	        line_loss_cnt -= 1
-	    else:
-	        line_loss_cnt += 1
-	    if len(d) > 0:
-	        line = np.mean(d, axis=0, dtype=np.float32)
-	        return line
-	    else:
-	        return None, None
+def slide_filter(d, line):
+    global line_loss_cnt
+    if line is not None:
+        d.append(line)
+        line_loss_cnt -= 1
+    else:
+        line_loss_cnt += 1
+    if len(d) > 0:
+        line = np.mean(d, axis=0, dtype=np.float32)
+        return line
+    else:
+        return None, None
 ```
 
 - At last, if not find a line in a frame, use the previous line instead.
@@ -267,19 +278,6 @@ The last step, merge the detected line with initial image.
 
 
 
-[HLS_1_1]: ./processed_pictures/HLS_4/origin.jpg "origin"
-[HLS_1_2]: ./processed_pictures/HLS_4/img_cov.jpg "img_cov"
-[HLS_1_3]: ./processed_pictures/HLS_4/wy_img.jpg "wy_img"
-[HLS_1_4]: ./processed_pictures/HLS_4/blur_gray.jpg "blur_gray"
-[HLS_1_5]: ./processed_pictures/HLS_4/edges.jpg "edges"
-[HLS_1_6]: ./processed_pictures/HLS_4/result.jpg "result"
-
-[RGB_1_1]: ./processed_pictures/RGB_4/origin.jpg "origin"
-[RGB_1_2]: ./processed_pictures/RGB_4/img_cov.jpg "img_cov"
-[RGB_1_3]: ./processed_pictures/RGB_4/wy_img.jpg "wy_img"
-[RGB_1_4]: ./processed_pictures/RGB_4/blur_gray.jpg "blur_gray"
-[RGB_1_5]: ./processed_pictures/RGB_4/edges.jpg "edges"
-[RGB_1_6]: ./processed_pictures/RGB_4/result.jpg "result"
 
 
 
