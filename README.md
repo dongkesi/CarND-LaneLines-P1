@@ -196,7 +196,7 @@ def draw_lines(img, lines, color=[255, 0, 0], thickness=12):
 
     # Average slope and intercept according to the lenght weight, then smooth them by slide window filter
     # if there is not line detected, use the last slope and intercept.
-    if right_length != 0 and right_length != 0:
+    if right_length != 0 and left_length != 0:
         (r_m, r_b) = np.sum(right_fit, axis=0) / right_length
         (l_m, l_b) = np.sum(left_fit, axis=0) / left_length
     else:
